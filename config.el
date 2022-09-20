@@ -1,4 +1,4 @@
-;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
+;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
@@ -28,21 +28,17 @@
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
 ;; refresh your font settings. If Emacs still can't find your font, it likely
 ;; wasn't installed correctly. Font issues are rarely Doom issues!
-
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-outrun-electric
+
+(setq doom-theme 'doom-dark+
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
-;; (set-frame-parameter (selected-frame) 'alpha '(85 85))
-;; (add-to-list 'default-frame-alist '(alpha 085 85))
 (setq display-line-numbers-type t)
 (setq doom-unicode-font (font-spec :family "Iosevka Nerd Font" :size 14))
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
- (remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
+;; (remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
 
 ;;KEYBINDINGS
 
@@ -77,6 +73,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
        (:desc "shuffle playlist" "z" #'emms-shuffle)
        (:desc "emms next track" "k" #'emms-next)
        (:desc "emms previous track" "j" #'emms-previous)))
+
 (map! :prefix ("M-s")
       (:desc "yas snippet expand" "M-s" #'yas-expand)
       (:desc "yas snippet expand" "M-e" #'company-yasnippet))
@@ -97,7 +94,6 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 (add-hook 'html-mode-hook (lambda() (emmet-mode 1)))
 (add-hook 'after-init-hook #'global-prettier-mode)
-(add-hook 'after-init-hook #'rainbow-mode)
 
 ;; (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
 ;; (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
@@ -115,53 +111,17 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
 (add-hook 'web-mode-hook #'emmet-mode)
 (add-hook 'web-mode-hook #'prettier-mode)
 ;;lsp
-
+;; (add-hook 'lsp-mode-hook (lambda () (lsp-headerline-breadcrumb-mode 1)))
 (add-hook 'mhtml-mode-hook #'lsp)
 (add-hook 'css-mode-hook #'lsp)
 (add-hook 'rjsx-mode-hook #'lsp)
-(use-package lsp-pyright
-  :ensure t
-  :hook (python-mode . (lambda () (require 'lsp-pyright) (lsp-deferred))))
+;;prerequisites
+;;pip3 install jedi autopep8 flake8 ipython yapf importmagic
+(setq python-shell-interpreter "ipython"
+      python-shell-interpreter-args "-i --simple-prompt")
 ;; (define-globalized-minor-mode my-global-rainbow-mode rainbow-mode
 ;;   (lambda () (rainbow-mode 1)))
 ;; (my-global-rainbow-mode 1)
-;;   - Setting file/directory variables (like `org-directory')
-;;   - Setting variables which explicitly tell you to set them before their
-;;     package is loaded (see 'C-h v VARIABLE' to look up their documentation).
-;;   - Setting doom variables (which start with 'doom-' or '+').
-;;
-;; Here are some additional functions/macros that will help you configure Doom.
-;;
-;; - `load!' for loading external *.el files relative to this one
-;; - `use-package!' for configuring packages
-;; - `after!' for running code after a package has loaded
-;; - `add-load-path!' for adding directories to the `load-path', relative to
-;;   this file. Emacs searches the `load-path' when you load packages with
-;;   `require' or `use-package'.
-;; - `map!' for binding new keys
-;;
-;; To get information about any of these functions/macros, move the cursor over
-;; the highlighted symbol at press 'K' (non-evil users must press 'C-c c k').
-;; This will open documentation for it, including demos of how they are used.
-;; Alternatively, use `C-h o' to look up a symbol (functions, variables, faces,
-;; etc).
-;;
-;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
-
-;; they are implemented.
-;; (defun load-pretty-symbols() "load symbols"
-;;         (setq prettify-symbols-alist  '(("->" . ?→)
-;;                                         ("->>" . ?↠)
-;;                                         ("===" . ?≡)
-;;                                         ("!==" . ?≢)
-;;                                         ("==>" . ?⟹)
-;;                                         ("=>" . ?⇒)
-;;                                         ("!=" . ?≠)
-;;                                         ("!<" . ?≮)
-;;                                         ("!>" . ?≯)))
-;;                                 (prettify-symbols-mode 1))
-;; (add-hook 'rjsx-mode-hook 'load-pretty-symbols)
-;; (add-hook 'js2-jsx-mode 'load-pretty-symbols())
 
 (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1)))
 (use-package! org-superstar

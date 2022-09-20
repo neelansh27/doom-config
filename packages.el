@@ -45,6 +45,5 @@
 (package! prettier)
 (package! helm)
 (package! web-mode)
-(package! lsp-pyright)
 (package! yasnippet)
 ;; (package! pretty-symbols)
