@@ -46,4 +46,7 @@
 (package! helm)
 (package! web-mode)
 (package! yasnippet)
+(package! lsp-pyright)
+(package! tree-sitter)
+(package! tree-sitter-langs)
 ;; (package! pretty-symbols)

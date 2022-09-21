@@ -32,13 +32,20 @@
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
 
-(setq doom-theme 'doom-dark+
+(setq doom-theme 'doom-gruvbox
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
 (setq display-line-numbers-type t)
 (setq doom-unicode-font (font-spec :family "Iosevka Nerd Font" :size 14))
 (setq org-directory "~/org/")
 
-;; (remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
+(remove-hook 'doom-first-buffer-hook #'global-hl-line-mode)
+
+;;TREE-SITTER
+(use-package! tree-sitter
+  :config
+  (require 'tree-sitter-langs)
+  (global-tree-sitter-mode)
+  (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
 
 ;;KEYBINDINGS
 
@@ -85,9 +92,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
 (setq company-idle-delay 0)
 ;; (setq company-backends '((company-capf company-yasnippet company-dabbrev-code company-files)))
 (yas-global-mode 1)
-(after! python
-  :init
-  (setq! +lsp-company-backends '(:separate company-yasnippet company-capf) ))
+(setq! +lsp-company-backends '(:separate company-yasnippet company-capf))
 (add-hook 'yas-minor-mode-hook (lambda() (yas-activate-extra-mode 'fundamental-mode)))
 (remove-hook 'eshell-mode-hook 'company-mode)
 ;;MODE SETTINGS
@@ -115,6 +120,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'medium))
 (add-hook 'mhtml-mode-hook #'lsp)
 (add-hook 'css-mode-hook #'lsp)
 (add-hook 'rjsx-mode-hook #'lsp)
+(add-hook 'python-mode-hook #'lsp)
 ;;prerequisites
 ;;pip3 install jedi autopep8 flake8 ipython yapf importmagic
 (setq python-shell-interpreter "ipython"
