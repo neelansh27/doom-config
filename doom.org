@@ -1,3 +1,54 @@
+#+title: Doom Emacs Configuration
+#+author: Neelansh Sharma
+#+property: header-args
+* Table of Contents :toc:
+- [[#packages-needed][Packages Needed]]
+-  [[#setting-up-username-and-font][Setting up username and font]]
+- [[#transparent-emacs][Transparent emacs]]
+- [[#tree-sitter-configuration][Tree-Sitter configuration]]
+- [[#emacs-music-player-configuration][Emacs music Player Configuration]]
+  - [[#key-bindings][key bindings]]
+- [[#company-mode-settings][Company-mode Settings]]
+  - [[#set-backends][set backends]]
+- [[#dired][Dired]]
+- [[#web-mode][Web-mode]]
+  - [[#add-web-mode-to-all-these-files][Add web mode to all these files]]
+- [[#emmet-mode][Emmet-mode]]
+- [[#python-mode][Python-mode]]
+- [[#rainbow-mode][Rainbow-mode]]
+- [[#lsp][Lsp]]
+- [[#org-mode][Org-mode]]
+- [[#key-bindings-1][key bindings]]
+  - [[#run][run]]
+  - [[#yasnippet][yasnippet]]
+  - [[#dired-1][Dired]]
+  - [[#enclose-region-in-brackets][Enclose region in brackets]]
+
+* Packages Needed
+
+#+begin_src elisp :tangle packages.el
+(package! emmet-mode)
+(package! org-superstar)
+(package! hl-line :disable t)
+(package! all-the-icons-dired)
+(package! prettier)
+(package! helm)
+(package! web-mode)
+(package! yasnippet)
+(package! lsp-pyright)
+(package! tree-sitter)
+(package! tree-sitter-langs)
+;; (package! pretty-symbols)
+#+end_src
+
+If you'd like to disable a package included with Doom, you can do so here
+with the `:disable' property:
+#+begin_src  elisp
+(package! builtin-package :disable t)
+#+end_src
+
+*  Setting up username and font
+#+begin_src elisp :tangle config.el
 (setq user-full-name "Neelansh Sharma"
       user-mail-address "neelanshsharma30@gmail.com")
 
@@ -5,16 +56,25 @@
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq display-line-numbers-type t)
 (setq doom-unicode-font (font-spec :family "Iosevka Nerd Font" :size 14))
+#+end_src
 
-(set-frame-parameter (selected-frame) 'alpha '(87 . 87))
-(add-to-list 'default-frame-alist '(alpha . (87 . 87)))
+* Transparent emacs
+#+begin_src elisp :tangle config.el
+(set-frame-parameter (selected-frame) 'alpha-background '(87 . 87))
+(add-to-list 'default-frame-alist '(alpha-background . (87 . 87)))
+#+end_src
 
+* Tree-Sitter configuration
+#+begin_src elisp :tangle config.el
 (use-package! tree-sitter
   :config
   (require 'tree-sitter-langs)
   (global-tree-sitter-mode)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+#+end_src
 
+* Emacs music Player Configuration
+#+begin_src elisp :tangle config.el
 (use-package emms
   :config
     (require 'emms-setup)
@@ -27,7 +87,10 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
     (setq emms-player-mpd-server-name "localhost")
     (setq emms-player-mpd-server-port "6600")
     (setq emms-player-mpd-music-directory "~/Music"))
+#+end_src
 
+** key bindings
+#+begin_src elisp :tangle config.el
 (map! :prefix ("C-c"."applications")
       (:prefix ("m"."emms")
        (:desc "start emms" "s" #'emms-player-mpd-connect)
@@ -39,20 +102,46 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
        (:desc "shuffle playlist" "z" #'emms-shuffle)
        (:desc "emms next track" "k" #'emms-next)
        (:desc "emms previous track" "j" #'emms-previous)))
+#+end_src
 
+* Company-mode Settings
+#+begin_src elisp :tangle config.el
 (yas-global-mode 1)
 (setq company-dabbrev-downcase 0)
 (setq company-idle-delay 0)
 (setq! +lsp-company-backends '(:separate company-yasnippet company-capf))
 (add-hook 'yas-minor-mode-hook (lambda() (yas-activate-extra-mode 'fundamental-mode)))
 (remove-hook 'eshell-mode-hook 'company-mode)
+#+end_src
+** set backends
+(setq company-backends '((company-capf company-yasnippet company-dabbrev-code company-files)))
 
+* Dired
+#+begin_src elisp :tangle config.el
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-
+#+end_src
+To move up and down directories with "h" and "l"
+#+begin_src elisp :tangle config.el
 (evil-collection-define-key 'normal 'dired-mode-map
       "h" 'dired-up-directory
       "l" 'dired-find-alternate-file)
+#+end_src
 
+* Web-mode
+** Add web mode to all these files
+
++ (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.s?css?\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
+
+#+begin_src elisp :tangle config.el
 (add-hook 'css-mode-hook #'lsp)
 (add-hook 'rjsx-mode-hook #'lsp)
 (add-hook 'web-mode-hook #'lsp)
@@ -61,13 +150,32 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (add-hook 'web-mode-hook #'prettier-mode)
 (add-hook 'mhtml-mode-hook #'lsp)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+#+end_src
 
+* Emmet-mode
+#+begin_src elisp :tangle config.el
 (add-hook 'emmet-mode-hook (lambda() (local-set-key (kbd "<C-return>") 'emmet-expand-line)))
-
+#+end_src
+* Python-mode
+pip3 install jedi autopep8 flake8 ipython yapf importmagic to setup python mode
+#+begin_src elisp :tangle config.el
 (add-hook 'python-mode-hook #'lsp)
 (setq python-shell-interpreter "ipython"
       python-shell-interpreter-args "-i --simple-prompt")
+#+end_src
 
+* Rainbow-mode
+To make a minor-mode global
+#+begin_src elisp
+(define-globalized-minor-mode my-global-rainbow-mode rainbow-mode
+  (lambda () (rainbow-mode 1)))
+(my-global-rainbow-mode 1)
+#+end_src
+
+* Lsp
+(add-hook 'lsp-mode-hook (lambda () (lsp-headerline-breadcrumb-mode 1)))
+* Org-mode
+#+begin_src elisp :tangle config.el
 (use-package! org
   :config
   (setq org-hide-emphasis-markers t))
@@ -86,22 +194,33 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
     :hook (org-mode . org-superstar-mode)
     :config
       (set-face-attribute 'org-superstar-header-bullet nil  :height 120))
-
+#+end_src
+* key bindings
+** run
+#+begin_src elisp :tangle config.el
 (map! :leader :desc "nil" "SPC" nil)
 (map! :leader :prefix ("r"."run")
                (:desc "run python" "p" #'run-python)
                (:desc "run eshell" "e" #'eshell)
                (:desc "run ansi-term" "a" #'ansi-term)
                (:desc "run vterm" "v" #'+vterm/here))
-
+#+end_src
+** yasnippet
+#+begin_src elisp :tangle config.el
 (map! :prefix ("M-s")
       (:desc "yas snippet expand" "M-s" #'yas-expand)
       (:desc "yas snippet expand" "M-e" #'company-yasnippet))
-
+#+end_src
+** Dired
+To open directories with "h" and "l"
+#+begin_src elisp :tangle config.el
 (evil-collection-define-key 'normal 'dired-mode-map
       "h" 'dired-up-directory
       "l" 'dired-find-alternate-file)
+#+end_src
 
+** Enclose region in brackets
+#+begin_src elisp :tangle config.el
 (global-set-key (kbd "M-[") 'insert-pair)
 (global-set-key (kbd "M-{") 'insert-pair)
 (global-set-key (kbd "M-\"") 'insert-pair)
@@ -109,3 +228,4 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (global-set-key (kbd "M-)") 'delete-pair)
 (global-set-key (kbd "M-}") 'delete-pair)
 (global-set-key (kbd "M-]") 'delete-pair)
+#+end_src
