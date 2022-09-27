@@ -21,13 +21,13 @@
 - [[#key-bindings-1][key bindings]]
   - [[#run][run]]
   - [[#yasnippet][yasnippet]]
-  - [[#dired-1][Dired]]
   - [[#enclose-region-in-brackets][Enclose region in brackets]]
 
 * Packages Needed
 
 #+begin_src elisp :tangle packages.el
 (package! emmet-mode)
+(package! fira-code-mode)
 (package! org-superstar)
 (package! hl-line :disable t)
 (package! all-the-icons-dired)
@@ -55,13 +55,76 @@ with the `:disable' property:
 (setq doom-theme 'doom-gruvbox
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq display-line-numbers-type t)
-(setq doom-unicode-font (font-spec :family "Iosevka Nerd Font" :size 14))
+(setq doom-unicode-font (font-spec :family "Iosevka" :size 16))
+(defconst jetbrains-ligature-mode--ligatures
+   '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
+     "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
+     "|||" "///" "&&&" "===" "++" "--" "=>" "|>" "<|" "||>" "<||"
+     "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
+     "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
+     "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
+     "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
+     "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
+     ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
+     "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
+     "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
+     "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
+     "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
+     "&="))
+(defun jetbrains-ligature-mode--make-alist (list)
+   "Generate prettify-symbols alist from LIST."
+   (let ((idx -1))
+     (mapcar
+      (lambda (s)
+        (setq idx (1+ idx))
+        (if s
+            (let* ((code (+ #X10001 idx))
+                   (width (string-width s))
+                   (prefix ())
+                   (suffix '(?\s (Br . Br)))
+                   (n 1))
+              (while (< n width)
+                (setq prefix (append prefix '(?\s (Br . Bl))))
+                (setq n (1+ n)))
+              (cons s (append prefix suffix (list (decode-char 'ucs code)))))))
+      list)))
+(defvar jetbrains-ligature-mode--old-prettify-alist)
+(sort jetbrains-ligature-mode--ligatures (lambda (x y) (> (length x) (length y))))
+(dolist (pat jetbrains-ligature-mode--ligatures)
+  (set-char-table-range composition-function-table
+                      (aref pat 0)
+                      (nconc (char-table-range composition-function-table (aref pat 0))
+                             (list (vector (regexp-quote pat)
+                                           0
+                                    'compose-gstring-for-graphic)))))
+(defun jetbrains-ligature-mode--enable ()
+    "Enable JetBrains Mono ligatures in current buffer."
+    (setq-local jetbrains-ligature-mode--old-prettify-alist prettify-symbols-alist)
+       (setq-local prettify-symbols-alist (append (jetbrains-ligature-mode--make-alist jetbrains-ligature-mode--ligatures) jetbrains-ligature-mode--old-prettify-alist))
+       (prettify-symbols-mode t))
+
+(defun jetbrains-ligature-mode--disable ()
+    "Disable JetBrains Mono ligatures in current buffer."
+    (setq-local prettify-symbols-alist jetbrains-ligature-mode--old-prettify-alist)
+    (prettify-symbols-mode -1))
+
+(define-minor-mode jetbrains-ligature-mode
+    "JetBrains Mono ligatures minor mode"
+    :lighter " JetBrains Mono"
+    (setq-local prettify-symbols-unprettify-at-point 'right-edge)
+    (if jetbrains-ligature-mode
+        (jetbrains-ligature-mode--enable)
+      (jetbrains-ligature-mode--disable)))
+(provide 'jetbrains-ligature-mode)
+
 #+end_src
 
 * Transparent emacs
 #+begin_src elisp :tangle config.el
-(set-frame-parameter (selected-frame) 'alpha-background '(87 . 87))
-(add-to-list 'default-frame-alist '(alpha-background . (87 . 87)))
+(set-frame-parameter (selected-frame) 'alpha '92)
+(add-to-list 'default-frame-alist '(alpha 92 92))
+;; (set-frame-parameter nil 'alpha-background '90)
+;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 #+end_src
 
 * Tree-Sitter configuration
@@ -103,7 +166,6 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
        (:desc "emms next track" "k" #'emms-next)
        (:desc "emms previous track" "j" #'emms-previous)))
 #+end_src
-
 * Company-mode Settings
 #+begin_src elisp :tangle config.el
 (yas-global-mode 1)
@@ -211,14 +273,6 @@ To make a minor-mode global
       (:desc "yas snippet expand" "M-s" #'yas-expand)
       (:desc "yas snippet expand" "M-e" #'company-yasnippet))
 #+end_src
-** Dired
-To open directories with "h" and "l"
-#+begin_src elisp :tangle config.el
-(evil-collection-define-key 'normal 'dired-mode-map
-      "h" 'dired-up-directory
-      "l" 'dired-find-alternate-file)
-#+end_src
-
 ** Enclose region in brackets
 #+begin_src elisp :tangle config.el
 (global-set-key (kbd "M-[") 'insert-pair)
