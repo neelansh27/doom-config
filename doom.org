@@ -5,6 +5,7 @@
 - [[#packages-needed][Packages Needed]]
 -  [[#setting-up-username-and-font][Setting up username and font]]
 - [[#transparent-emacs][Transparent emacs]]
+- [[#multiple-cursors][Multiple Cursors]]
 - [[#tree-sitter-configuration][Tree-Sitter configuration]]
 - [[#emacs-music-player-configuration][Emacs music Player Configuration]]
   - [[#key-bindings][key bindings]]
@@ -17,6 +18,7 @@
 - [[#python-mode][Python-mode]]
 - [[#rainbow-mode][Rainbow-mode]]
 - [[#lsp][Lsp]]
+- [[#dap-mode][Dap-mode]]
 - [[#org-mode][Org-mode]]
 - [[#key-bindings-1][key bindings]]
   - [[#run][run]]
@@ -31,13 +33,13 @@
 (package! org-superstar)
 (package! hl-line :disable t)
 (package! all-the-icons-dired)
+(package! multiple-cursors)
 (package! prettier)
 (package! helm)
 (package! web-mode)
 (package! yasnippet)
 (package! lsp-pyright)
-(package! tree-sitter)
-(package! tree-sitter-langs)
+(package! dap-mode)
 ;; (package! pretty-symbols)
 #+end_src
 
@@ -55,7 +57,8 @@ with the `:disable' property:
 (setq doom-theme 'doom-gruvbox
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq display-line-numbers-type t)
-(setq doom-unicode-font (font-spec :family "Iosevka" :size 16))
+(setq doom-unicode-font (font-spec :family "Iosevka" :weight 'bold :size 18))
+(set-language-environment "UTF-8")
 (defconst jetbrains-ligature-mode--ligatures
    '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
      "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
@@ -63,7 +66,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
      "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
      "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
      "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
-     "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
+     "<:" ":<" ":>" ">:" "<>" ";;" "/==" ".=" ".-" "__"
      "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
      ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
      "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
@@ -121,19 +124,28 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 
 * Transparent emacs
 #+begin_src elisp :tangle config.el
-(set-frame-parameter (selected-frame) 'alpha '92)
-(add-to-list 'default-frame-alist '(alpha 92 92))
+(set-frame-parameter (selected-frame) 'alpha '93)
+(add-to-list 'default-frame-alist '(alpha 93 93))
 ;; (set-frame-parameter nil 'alpha-background '90)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 #+end_src
 
+* Multiple Cursors
+#+begin_src elisp :tangle config.el
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-S-<mouse-1>") #'mc/add-cursor-on-click)
+#+end_src
 * Tree-Sitter configuration
 #+begin_src elisp :tangle config.el
 (use-package! tree-sitter
   :config
-  (require 'tree-sitter-langs)
   (global-tree-sitter-mode)
+  (require 'tree-sitter-langs)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+(add-hook 'mhtml-mode-hook (lambda() (tree-sitter-mode -1)))
 #+end_src
 
 * Emacs music Player Configuration
@@ -210,8 +222,9 @@ To move up and down directories with "h" and "l"
 (add-hook 'web-mode-hook 'rainbow-mode)
 (add-hook 'web-mode-hook #'emmet-mode)
 (add-hook 'web-mode-hook #'prettier-mode)
+(add-hook 'mhtml-mode-hook #'prettier-mode)
 (add-hook 'mhtml-mode-hook #'lsp)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . mhtml-mode))
 #+end_src
 
 * Emmet-mode
@@ -235,7 +248,21 @@ To make a minor-mode global
 #+end_src
 
 * Lsp
-(add-hook 'lsp-mode-hook (lambda () (lsp-headerline-breadcrumb-mode 1)))
+#+begin_src elisp :tangle config.el
+(use-package lsp-mode
+  :custom
+  (lsp-headerline-breadcrumb-enable t))
+#+end_src
+
+* Dap-mode
+#+begin_src elisp :tangle config.el
+(setq dap-auto-configure-features '(sessions locals controls tooltip))
+(require 'dap-firefox)
+(require 'dap-node)
+(setq dap-python-executable "python3")
+(setq dap-python-debugger 'debugpy)
+(require 'dap-python)
+#+end_src
 * Org-mode
 #+begin_src elisp :tangle config.el
 (use-package! org

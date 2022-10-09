@@ -4,7 +4,8 @@
 (setq doom-theme 'doom-gruvbox
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq display-line-numbers-type t)
-(setq doom-unicode-font (font-spec :family "Iosevka" :size 16))
+(setq doom-unicode-font (font-spec :family "Iosevka" :weight 'bold :size 18))
+(set-language-environment "UTF-8")
 (defconst jetbrains-ligature-mode--ligatures
    '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
      "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
@@ -12,7 +13,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
      "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
      "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
      "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
-     "<:" ":<" ":>" ">:" "<>" "***" ";;" "/==" ".=" ".-" "__"
+     "<:" ":<" ":>" ">:" "<>" ";;" "/==" ".=" ".-" "__"
      "=/=" "<-<" "<<<" ">>>" "<=<" "<<=" "<==" "<==>" "==>" "=>>"
      ">=>" ">>=" ">>-" ">-" "<~>" "-<" "-<<" "=<<" "---" "<-|"
      "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
@@ -66,16 +67,23 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
       (jetbrains-ligature-mode--disable)))
 (provide 'jetbrains-ligature-mode)
 
-(set-frame-parameter (selected-frame) 'alpha '92)
-(add-to-list 'default-frame-alist '(alpha 92 92))
+(set-frame-parameter (selected-frame) 'alpha '93)
+(add-to-list 'default-frame-alist '(alpha 93 93))
 ;; (set-frame-parameter nil 'alpha-background '90)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
+(global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+(global-set-key (kbd "C->") 'mc/mark-next-like-this)
+(global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+(global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this)
+(global-set-key (kbd "C-S-<mouse-1>") #'mc/add-cursor-on-click)
+
 (use-package! tree-sitter
   :config
-  (require 'tree-sitter-langs)
   (global-tree-sitter-mode)
+  (require 'tree-sitter-langs)
   (add-hook 'tree-sitter-after-on-hook #'tree-sitter-hl-mode))
+(add-hook 'mhtml-mode-hook (lambda() (tree-sitter-mode -1)))
 
 (use-package emms
   :config
@@ -121,14 +129,26 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (add-hook 'web-mode-hook 'rainbow-mode)
 (add-hook 'web-mode-hook #'emmet-mode)
 (add-hook 'web-mode-hook #'prettier-mode)
+(add-hook 'mhtml-mode-hook #'prettier-mode)
 (add-hook 'mhtml-mode-hook #'lsp)
-(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . mhtml-mode))
 
 (add-hook 'emmet-mode-hook (lambda() (local-set-key (kbd "<C-return>") 'emmet-expand-line)))
 
 (add-hook 'python-mode-hook #'lsp)
 (setq python-shell-interpreter "ipython"
       python-shell-interpreter-args "-i --simple-prompt")
+
+(use-package lsp-mode
+  :custom
+  (lsp-headerline-breadcrumb-enable t))
+
+(setq dap-auto-configure-features '(sessions locals controls tooltip))
+(require 'dap-firefox)
+(require 'dap-node)
+(setq dap-python-executable "python3")
+(setq dap-python-debugger 'debugpy)
+(require 'dap-python)
 
 (use-package! org
   :config
