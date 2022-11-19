@@ -1,10 +1,10 @@
 (setq user-full-name "Neelansh Sharma"
       user-mail-address "neelanshsharma30@gmail.com")
 
-(setq doom-theme 'doom-gruvbox
+(setq doom-theme 'doom-outrun-electric
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq display-line-numbers-type t)
-(setq doom-unicode-font (font-spec :family "Iosevka" :weight 'bold :size 18))
+(setq doom-unicode-font (font-spec :family "FontAwesome" :size 16))
 (set-language-environment "UTF-8")
 (defconst jetbrains-ligature-mode--ligatures
    '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
@@ -67,8 +67,8 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
       (jetbrains-ligature-mode--disable)))
 (provide 'jetbrains-ligature-mode)
 
-(set-frame-parameter (selected-frame) 'alpha '93)
-(add-to-list 'default-frame-alist '(alpha 93 93))
+(set-frame-parameter (selected-frame) 'alpha 88)
+(add-to-list 'default-frame-alist '(alpha 88 88))
 ;; (set-frame-parameter nil 'alpha-background '90)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 
@@ -139,6 +139,8 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq python-shell-interpreter "ipython"
       python-shell-interpreter-args "-i --simple-prompt")
 
+(setq large-file-warning-threshold 100000000)
+
 (use-package lsp-mode
   :custom
   (lsp-headerline-breadcrumb-enable t))
@@ -163,11 +165,20 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
                 (org-level-7 . 1.1)
                 (org-level-8 . 1.1)))
 (set-face-attribute (car face) nil :font "OpenSans"  :weight 'semi-bold :height (cdr face)))
+
 (use-package! org-superstar
     :after org
     :hook (org-mode . org-superstar-mode)
     :config
-      (set-face-attribute 'org-superstar-header-bullet nil  :height 120))
+      (set-face-attribute 'org-superstar-header-bullet nil  :height 180))
+(with-eval-after-load 'org-superstar
+  (setq org-superstar-item-bullet-alist
+        '((?* . ?▷)
+          (?+ . ?▷)
+          (?- . ?➤))))
+(setq org-return-follows-link t)
+(setq org-ellipsis " ▼ ")
+(setq org-image-actual-width nil)
 
 (map! :leader :desc "nil" "SPC" nil)
 (map! :leader :prefix ("r"."run")
@@ -187,3 +198,5 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (global-set-key (kbd "M-)") 'delete-pair)
 (global-set-key (kbd "M-}") 'delete-pair)
 (global-set-key (kbd "M-]") 'delete-pair)
+
+(setq confirm-kill-emacs nil)

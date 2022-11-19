@@ -1,5 +1,4 @@
 (package! emmet-mode)
-(package! fira-code-mode)
 (package! org-superstar)
 (package! hl-line :disable t)
 (package! all-the-icons-dired)

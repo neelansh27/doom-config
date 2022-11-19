@@ -24,12 +24,12 @@
   - [[#run][run]]
   - [[#yasnippet][yasnippet]]
   - [[#enclose-region-in-brackets][Enclose region in brackets]]
+- [[#quit-without-confirmation][Quit without confirmation]]
 
 * Packages Needed
 
 #+begin_src elisp :tangle packages.el
 (package! emmet-mode)
-(package! fira-code-mode)
 (package! org-superstar)
 (package! hl-line :disable t)
 (package! all-the-icons-dired)
@@ -54,10 +54,10 @@ with the `:disable' property:
 (setq user-full-name "Neelansh Sharma"
       user-mail-address "neelanshsharma30@gmail.com")
 
-(setq doom-theme 'doom-gruvbox
+(setq doom-theme 'doom-outrun-electric
 doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 (setq display-line-numbers-type t)
-(setq doom-unicode-font (font-spec :family "Iosevka" :weight 'bold :size 18))
+(setq doom-unicode-font (font-spec :family "FontAwesome" :size 16))
 (set-language-environment "UTF-8")
 (defconst jetbrains-ligature-mode--ligatures
    '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
@@ -122,10 +122,13 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 
 #+end_src
 
+#+RESULTS:
+: jetbrains-ligature-mode
+
 * Transparent emacs
 #+begin_src elisp :tangle config.el
-(set-frame-parameter (selected-frame) 'alpha '93)
-(add-to-list 'default-frame-alist '(alpha 93 93))
+(set-frame-parameter (selected-frame) 'alpha 88)
+(add-to-list 'default-frame-alist '(alpha 88 88))
 ;; (set-frame-parameter nil 'alpha-background '90)
 ;; (add-to-list 'default-frame-alist '(alpha-background . 90))
 #+end_src
@@ -149,6 +152,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
 #+end_src
 
 * Emacs music Player Configuration
+
 #+begin_src elisp :tangle config.el
 (use-package emms
   :config
@@ -210,7 +214,7 @@ To move up and down directories with "h" and "l"
 + (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
 + (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 + (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-+ (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
++ (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode)
 + (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
 + (add-to-list 'auto-mode-alist '("\\.s?css?\\'" . web-mode))
 + (add-to-list 'auto-mode-alist '("\\.js[x]?\\'" . web-mode))
@@ -247,6 +251,11 @@ To make a minor-mode global
 (my-global-rainbow-mode 1)
 #+end_src
 
+* Disable/Set warning before opening large file
+#+begin_src elisp :tangle config.el
+(setq large-file-warning-threshold 100000000)
+#+end_src
+
 * Lsp
 #+begin_src elisp :tangle config.el
 (use-package lsp-mode
@@ -278,11 +287,20 @@ To make a minor-mode global
                 (org-level-7 . 1.1)
                 (org-level-8 . 1.1)))
 (set-face-attribute (car face) nil :font "OpenSans"  :weight 'semi-bold :height (cdr face)))
+
 (use-package! org-superstar
     :after org
     :hook (org-mode . org-superstar-mode)
     :config
-      (set-face-attribute 'org-superstar-header-bullet nil  :height 120))
+      (set-face-attribute 'org-superstar-header-bullet nil  :height 180))
+(with-eval-after-load 'org-superstar
+  (setq org-superstar-item-bullet-alist
+        '((?* . ?▷)
+          (?+ . ?▷)
+          (?- . ?➤))))
+(setq org-return-follows-link t)
+(setq org-ellipsis " ▼ ")
+(setq org-image-actual-width nil)
 #+end_src
 * key bindings
 ** run
@@ -309,4 +327,8 @@ To make a minor-mode global
 (global-set-key (kbd "M-)") 'delete-pair)
 (global-set-key (kbd "M-}") 'delete-pair)
 (global-set-key (kbd "M-]") 'delete-pair)
+#+end_src
+* Quit without confirmation
+#+begin_src elisp :tangle config.el
+(setq confirm-kill-emacs nil)
 #+end_src
