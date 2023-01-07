@@ -1,4 +1,5 @@
 (package! emmet-mode)
+(package! undo-fu)
 (package! org-superstar)
 (package! hl-line :disable t)
 (package! all-the-icons-dired)
@@ -9,4 +10,5 @@
 (package! yasnippet)
 (package! lsp-pyright)
 (package! dap-mode)
+(package! js-react-redux-yasnippets )
 ;; (package! pretty-symbols)

@@ -17,6 +17,7 @@
 - [[#emmet-mode][Emmet-mode]]
 - [[#python-mode][Python-mode]]
 - [[#rainbow-mode][Rainbow-mode]]
+- [[#disableset-warning-before-opening-large-file][Disable/Set warning before opening large file]]
 - [[#lsp][Lsp]]
 - [[#dap-mode][Dap-mode]]
 - [[#org-mode][Org-mode]]
@@ -30,6 +31,7 @@
 
 #+begin_src elisp :tangle packages.el
 (package! emmet-mode)
+(package! undo-fu)
 (package! org-superstar)
 (package! hl-line :disable t)
 (package! all-the-icons-dired)
@@ -40,6 +42,7 @@
 (package! yasnippet)
 (package! lsp-pyright)
 (package! dap-mode)
+(package! js-react-redux-yasnippets )
 ;; (package! pretty-symbols)
 #+end_src
 
@@ -53,16 +56,16 @@ with the `:disable' property:
 #+begin_src elisp :tangle config.el
 (setq user-full-name "Neelansh Sharma"
       user-mail-address "neelanshsharma30@gmail.com")
-
+;;"<=" ">="
 (setq doom-theme 'doom-outrun-electric
-doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
+doom-font (font-spec :family "CaskaydiaCove Nerd Font" :size 23 :weight 'semi-bold))
 (setq display-line-numbers-type t)
-(setq doom-unicode-font (font-spec :family "FontAwesome" :size 16))
+(setq doom-unicode-font (font-spec :family "FontAwesome" :size 26))
 (set-language-environment "UTF-8")
-(defconst jetbrains-ligature-mode--ligatures
+(defconst caskaydiacove-ligature-mode--ligatures
    '("-->" "//" "/**" "/*" "*/" "<!--" ":=" "->>" "<<-" "->" "<-"
-     "<=>" "==" "!=" "<=" ">=" "=:=" "!==" "&&" "||" "..." ".."
-     "|||" "///" "&&&" "===" "++" "--" "=>" "|>" "<|" "||>" "<||"
+     "<=>" "==" "!="  "=:=" "!==" "&&" "||" "..." ".."
+     "|||" "///" "&&&" "==="  "++" "--" "=>" "|>" "<|" "||>" "<||"
      "|||>" "<|||" ">>" "<<" "::=" "|]" "[|" "{|" "|}"
      "[<" ">]" ":?>" ":?" "/=" "[||]" "!!" "?:" "?." "::"
      "+++" "??" "###" "##" ":::" "####" ".?" "?=" "=!=" "<|>"
@@ -74,7 +77,7 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
      "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
      "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
      "&="))
-(defun jetbrains-ligature-mode--make-alist (list)
+(defun caskaydiacove-ligature-mode--make-alist (list)
    "Generate prettify-symbols alist from LIST."
    (let ((idx -1))
      (mapcar
@@ -91,39 +94,36 @@ doom-font (font-spec :family "JetBrains Mono" :size 14 :weight 'semi-bold))
                 (setq n (1+ n)))
               (cons s (append prefix suffix (list (decode-char 'ucs code)))))))
       list)))
-(defvar jetbrains-ligature-mode--old-prettify-alist)
-(sort jetbrains-ligature-mode--ligatures (lambda (x y) (> (length x) (length y))))
-(dolist (pat jetbrains-ligature-mode--ligatures)
+(defvar caskaydiacove-ligature-mode--old-prettify-alist)
+(sort caskaydiacove-ligature-mode--ligatures (lambda (x y) (> (length x) (length y))))
+(dolist (pat caskaydiacove-ligature-mode--ligatures)
   (set-char-table-range composition-function-table
                       (aref pat 0)
                       (nconc (char-table-range composition-function-table (aref pat 0))
                              (list (vector (regexp-quote pat)
                                            0
                                     'compose-gstring-for-graphic)))))
-(defun jetbrains-ligature-mode--enable ()
+(defun caskaydiacove-ligature-mode--enable ()
     "Enable JetBrains Mono ligatures in current buffer."
-    (setq-local jetbrains-ligature-mode--old-prettify-alist prettify-symbols-alist)
-       (setq-local prettify-symbols-alist (append (jetbrains-ligature-mode--make-alist jetbrains-ligature-mode--ligatures) jetbrains-ligature-mode--old-prettify-alist))
+    (setq-local caskaydiacove-ligature-mode--old-prettify-alist prettify-symbols-alist)
+       (setq-local prettify-symbols-alist (append (caskaydiacove-ligature-mode--make-alist caskaydiacove-ligature-mode--ligatures) caskaydiacove-ligature-mode--old-prettify-alist))
        (prettify-symbols-mode t))
 
-(defun jetbrains-ligature-mode--disable ()
+(defun caskaydiacove-ligature-mode--disable ()
     "Disable JetBrains Mono ligatures in current buffer."
-    (setq-local prettify-symbols-alist jetbrains-ligature-mode--old-prettify-alist)
+    (setq-local prettify-symbols-alist caskaydiacove-ligature-mode--old-prettify-alist)
     (prettify-symbols-mode -1))
 
-(define-minor-mode jetbrains-ligature-mode
+(define-minor-mode caskaydiacove-ligature-mode
     "JetBrains Mono ligatures minor mode"
-    :lighter " JetBrains Mono"
+    :lighter "CaskaydiaCove Nerd Font"
     (setq-local prettify-symbols-unprettify-at-point 'right-edge)
-    (if jetbrains-ligature-mode
-        (jetbrains-ligature-mode--enable)
-      (jetbrains-ligature-mode--disable)))
-(provide 'jetbrains-ligature-mode)
+    (if caskaydiacove-ligature-mode
+        (caskaydiacove-ligature-mode--enable)
+      (caskaydiacove-ligature-mode--disable)))
+(provide caskaydiacove-ligature-mode)
 
 #+end_src
-
-#+RESULTS:
-: jetbrains-ligature-mode
 
 * Transparent emacs
 #+begin_src elisp :tangle config.el
