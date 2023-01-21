@@ -1,7 +1,7 @@
 (setq user-full-name "Neelansh Sharma"
       user-mail-address "neelanshsharma30@gmail.com")
 ;;"<=" ">="
-(setq doom-theme 'doom-outrun-electric
+(setq doom-theme 'doom-tokyo-night
 doom-font (font-spec :family "CaskaydiaCove Nerd Font" :size 23 :weight 'semi-bold))
 (setq display-line-numbers-type t)
 (setq doom-unicode-font (font-spec :family "FontAwesome" :size 26))
@@ -19,7 +19,7 @@ doom-font (font-spec :family "CaskaydiaCove Nerd Font" :size 23 :weight 'semi-bo
      "<=|" "/\\" "\\/" "|=>" "|~>" "<~~" "<~" "~~" "~~>" "~>"
      "<$>" "<$" "$>" "<+>" "<+" "+>" "<*>" "<*" "*>" "</>" "</" "/>"
      "<->" "..<" "~=" "~-" "-~" "~@" "^=" "-|" "_|_" "|-" "||-"
-     "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#="
+     "|=" "||=" "#{" "#[" "]#" "#(" "#?" "#_" "#_(" "#:" "#!" "#=" "----"
      "&="))
 (defun caskaydiacove-ligature-mode--make-alist (list)
    "Generate prettify-symbols alist from LIST."
@@ -67,10 +67,12 @@ doom-font (font-spec :family "CaskaydiaCove Nerd Font" :size 23 :weight 'semi-bo
       (caskaydiacove-ligature-mode--disable)))
 (provide caskaydiacove-ligature-mode)
 
-(set-frame-parameter (selected-frame) 'alpha 88)
-(add-to-list 'default-frame-alist '(alpha 88 88))
-;; (set-frame-parameter nil 'alpha-background '90)
-;; (add-to-list 'default-frame-alist '(alpha-background . 90))
+(set-frame-parameter (selected-frame) 'alpha-background 93)
+(add-to-list 'default-frame-alist '(alpha 93 93))
+;; (set-frame-parameter nil 'alpha-background 100) ; For current frame
+;; (add-to-list 'default-frame-alist '(alpha-background . 100)) ; For all new frames henceforth
+
+(setq fancy-splash-image (concat doom-private-dir "dp.png"))
 
 (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
 (global-set-key (kbd "C->") 'mc/mark-next-like-this)
@@ -115,6 +117,8 @@ doom-font (font-spec :family "CaskaydiaCove Nerd Font" :size 23 :weight 'semi-bo
 (setq company-idle-delay 0)
 (setq! +lsp-company-backends '(:separate company-yasnippet company-capf))
 (add-hook 'yas-minor-mode-hook (lambda() (yas-activate-extra-mode 'fundamental-mode)))
+(setq company-frontends '(company-pseudo-tooltip-frontend
+                          company-echo-metadata-frontend))
 (remove-hook 'eshell-mode-hook 'company-mode)
 
 (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
@@ -127,13 +131,14 @@ doom-font (font-spec :family "CaskaydiaCove Nerd Font" :size 23 :weight 'semi-bo
 (add-hook 'rjsx-mode-hook #'lsp)
 (add-hook 'web-mode-hook #'lsp)
 (add-hook 'web-mode-hook 'rainbow-mode)
-(add-hook 'web-mode-hook #'emmet-mode)
 (add-hook 'web-mode-hook #'prettier-mode)
 (add-hook 'mhtml-mode-hook #'prettier-mode)
 (add-hook 'mhtml-mode-hook #'lsp)
 (add-to-list 'auto-mode-alist '("\\.html?\\'" . mhtml-mode))
 
 (add-hook 'emmet-mode-hook (lambda() (local-set-key (kbd "<C-return>") 'emmet-expand-line)))
+(add-hook 'rjsx-mode-hook #'emmet-mode)
+(add-hook 'web-mode-hook #'emmet-mode)
 
 (add-hook 'python-mode-hook #'lsp)
 (setq python-shell-interpreter "ipython"
